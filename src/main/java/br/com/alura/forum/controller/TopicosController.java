@@ -6,6 +6,8 @@ import br.com.alura.forum.modelo.Topico;
 import br.com.alura.forum.repository.CursoRepository;
 import br.com.alura.forum.repository.TopicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,6 +29,7 @@ public class TopicosController {
 	private CursoRepository cursoRepository;
 	
 	@GetMapping("")
+	@Cacheable(value = "listaTopicos")
 	public Page<TopicoDTO> lista(@RequestParam(required = false) String nomeCurso,
 								 @PageableDefault(page = 0, size = 10,  direction = Sort.Direction.ASC) Pageable paginacao) {
 		if (nomeCurso == null) {
@@ -39,6 +42,7 @@ public class TopicosController {
 	}
 
 	@PostMapping
+	@CacheEvict(value = "listatopicos", allEntries = true)
 	public ResponseEntity<TopicoDTO> cadastrar(@RequestBody TopicoForm topicoForm, UriComponentsBuilder uriBuilder){
 		Topico topico = topicoForm.convert(cursoRepository);
 		topicoRepository.save(topico);
