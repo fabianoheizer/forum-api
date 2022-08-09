@@ -16,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.transaction.Transactional;
 import java.net.URI;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/topicos")
@@ -51,6 +53,19 @@ public class TopicosController {
 
 		// reposnde o 201 com a url do recurso criado e o body com o que foi criado
 		return ResponseEntity.created(uri).body(new TopicoDTO(topico));
+	}
+
+	@DeleteMapping("/{id}")
+	@Transactional
+	@CacheEvict(value = "listaDeTopicos", allEntries = true)
+	public ResponseEntity<?> remover(@PathVariable Long id) {
+		Optional<Topico> optional = topicoRepository.findById(id);
+		if (optional.isPresent()) {
+			topicoRepository.deleteById(id);
+			return ResponseEntity.ok().build();
+		}
+
+		return ResponseEntity.notFound().build();
 	}
 
 }
