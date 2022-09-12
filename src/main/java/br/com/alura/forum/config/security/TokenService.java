@@ -1,12 +1,14 @@
 package br.com.alura.forum.config.security;
 
 import br.com.alura.forum.modelo.Usuario;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 @Service
@@ -24,7 +26,7 @@ public class TokenService {
         Date dataExpiracao = new Date(dataCorrente.getTime() + Long.parseLong(expiration));
 
         return Jwts.builder()
-                .setIssuer("API do forum")
+                .setIssuer(usrLogado.getNome())
                 .setSubject(usrLogado.getId().toString())
                 .setIssuedAt(dataCorrente)
                 .setExpiration(dataExpiracao)
